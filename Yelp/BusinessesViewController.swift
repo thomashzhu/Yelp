@@ -8,7 +8,7 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
     
     var businesses: [Business]!
     
@@ -25,15 +25,21 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         if let navigationBar = navigationController?.navigationBar {
             if let searchBarView = Bundle.main.loadNibNamed("SearchBarView", owner: nil, options: nil)?.first as? SearchBarView {
                 searchBar = searchBarView.searchBar
+                searchBar.delegate = self
                 
                 searchBarView.frame = navigationBar.bounds
                 navigationBar.addSubview(searchBarView)
             }
         }
         
-        Business.searchWithTerm(term: "Thai", sort: .distance, categories: nil, deals: true) { (businesses, error) in
-            self.businesses = businesses
-            self.tableView.reloadData()
+        searchWith(term: "Restaurants")
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let text = searchBar.text {
+            if !text.isEmpty {
+                searchWith(term: text)
+            }
         }
     }
     
@@ -55,5 +61,12 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
             return businesses.count
         }
         return 0
+    }
+    
+    private func searchWith(term: String) {
+        Business.searchWithTerm(term: term, sort: .distance, categories: nil, deals: true) { (businesses, error) in
+            self.businesses = businesses
+            self.tableView.reloadData()
+        }
     }
 }
