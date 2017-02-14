@@ -10,13 +10,15 @@ import UIKit
 
 class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UIScrollViewDelegate {
     
-    var businesses = [Business]()
+    private(set) var businesses = [Business]()
     
-    var searchBar: UISearchBar!
+    private(set) var searchBar: UISearchBar!
+    private(set) var mapButton: UIButton!
+    
     @IBOutlet weak var tableView: UITableView!
     
-    var isMoreDataLoading = false
-    var loadingMoreView:InfiniteScrollActivityView?
+    private(set) var isMoreDataLoading = false
+    private(set) var loadingMoreView:InfiniteScrollActivityView?
     
     override func viewDidLoad() {
         
@@ -27,8 +29,13 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         
         if let navigationBar = navigationController?.navigationBar {
             if let searchBarView = Bundle.main.loadNibNamed("SearchBarView", owner: nil, options: nil)?.first as? SearchBarView {
+                
                 searchBar = searchBarView.searchBar
                 searchBar.delegate = self
+                
+                mapButton = searchBarView.mapButton
+                mapButton.addTarget(self,
+                                    action: #selector(BusinessesViewController.mapButtonTapped), for: .touchUpInside)
                 
                 searchBarView.frame = navigationBar.bounds
                 navigationBar.addSubview(searchBarView)
@@ -86,6 +93,13 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
         }
     }
     
+    func mapButtonTapped() {
+        if let vc = storyboard?.instantiateViewController(withIdentifier: "BusinessesMapViewController") as? BusinessesMapViewController {
+            vc.businesses = businesses
+            present(vc, animated: true, completion: nil)
+        }
+    }
+    
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if (!isMoreDataLoading) {
             // Calculate the position of one screen length before the bottom of the results
@@ -102,7 +116,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
                 loadingMoreView!.startAnimating()
                 
                 // Code to load more results
-                searchWith(term: "Restaurants")
+                searchWith(term: searchBar.text ?? "Restaurants")
             }
         }
     }

@@ -12,6 +12,7 @@ class SearchBarView: UIView {
 
     @IBOutlet weak var filterButton: UIButton!
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var mapButton: UIButton!
     
     override func awakeFromNib() {
         
@@ -24,9 +25,10 @@ class SearchBarView: UIView {
         
         searchBar.backgroundColor = F.Theme.Color.red
         searchBar.backgroundImage = UIImage()
-    }
-    
-    func getSearchBar() -> UISearchBar {
-        return searchBar
+        
+        mapButton.layer.borderColor = UIColor.white.cgColor
+        mapButton.layer.borderWidth = 1.0
+        mapButton.layer.cornerRadius = 6.0
+        mapButton.clipsToBounds = true
     }
 }
