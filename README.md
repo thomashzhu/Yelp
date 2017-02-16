@@ -1,8 +1,7 @@
 # Project 3 - Yelp
 
-Yelp is a Yelp search app using the [Yelp API](http://www.yelp.com/developers/documentation/v2/search_api).
-
-Time spent: 7.5 hours spent in total
+ssdfasdfasf
+Time spent: 8.5 hours spent in total
 
 ## User Stories
 
@@ -25,6 +24,7 @@ The following **additional** features are implemented:
 - [X] Map view in the detail page
 - [X] Yelp's Business API (besides the Search API), which is used to pull review
 - [X] Navigation from map view to detail view
+- [X] Filter search result (by category)
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
@@ -36,6 +36,8 @@ Please list two areas of the assignment you'd like to **discuss further with you
 Here's a walkthrough of implemented user stories:
 
 <img src='http://i.imgur.com/FMbM52X.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+Full video walkthrough is <a href='http://i.imgur.com/wDo7qdo.gif'>here</a>.
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
