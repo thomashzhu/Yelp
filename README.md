@@ -1,6 +1,6 @@
 # Project 3 - Yelp
 
-Time spent: 8.5 hours spent in total
+Time spent: 9.5 hours spent in total
 
 ## User Stories
 
@@ -23,7 +23,10 @@ The following **additional** features are implemented:
 - [X] Map view in the detail page
 - [X] Yelp's Business API (besides the Search API), which is used to pull review
 - [X] Navigation from map view to detail view
-- [X] Filter search result (by category) - multiselection supported
+- [X] Filter search result (by category) - multi-selection supported
+- [X] Landscape mode added
+- [X] Location service supported
+- [X] Loading indicator added
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
@@ -34,9 +37,7 @@ Please list two areas of the assignment you'd like to **discuss further with you
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/FMbM52X.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
-
-Full video walkthrough is <a href='http://i.imgur.com/wDo7qdo.gif'>here</a>.
+<img src='http://i.imgur.com/X5bKf7I.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
