@@ -1,6 +1,5 @@
 # Project 3 - Yelp
 
-ssdfasdfasf
 Time spent: 8.5 hours spent in total
 
 ## User Stories
@@ -24,7 +23,7 @@ The following **additional** features are implemented:
 - [X] Map view in the detail page
 - [X] Yelp's Business API (besides the Search API), which is used to pull review
 - [X] Navigation from map view to detail view
-- [X] Filter search result (by category)
+- [X] Filter search result (by category) - multiselection supported
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
