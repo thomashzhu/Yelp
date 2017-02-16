@@ -8,6 +8,7 @@ target 'Yelp' do
   # Pods for Yelp
   pod 'AFNetworking', '~> 2.5'
   pod 'BDBOAuth1Manager'
+  pod 'EZLoadingActivity', :git => 'https://github.com/goktugyil/EZLoadingActivity.git' #Latest release for Swift 3.0
 
   target 'YelpTests' do
     inherit! :search_paths

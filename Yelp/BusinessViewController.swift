@@ -9,6 +9,8 @@
 import UIKit
 import CoreLocation
 
+import EZLoadingActivity
+
 class BusinessViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UIScrollViewDelegate, CLLocationManagerDelegate {
     
     private(set) var businesses = [Business]()
@@ -137,7 +139,10 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
             userLocation = location
-            searchWith(term: "Restaurants", newSearch: true)
+            
+            if let searchBarText = searchBar.text {
+                searchWith(term: searchBarText.isEmpty ? "Restaurants" : searchBarText, newSearch: true)
+            }
         }
     }
     
@@ -180,6 +185,12 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
             }
         }()
         
+        if navigationController?.topViewController == self {
+            EZLoadingActivity.show("Loading...", disableUI: true)
+        } else {
+            print("Location change detected. Refreshing data in the back...")
+        }
+        
         Business.searchWithTerm(term: term, location: locationString, sort: .distance, categories: nil, deals: true) { (businesses, error) in
             if let businesses = businesses {
                 self.isMoreDataLoading = false
@@ -207,12 +218,16 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
                 self.categories.sort()
                 
                 self.tableView.reloadData()
+                
+                EZLoadingActivity.hide()
             }
         }
     }
     
     func mapButtonTapped() {
-        performSegue(withIdentifier: "BusinessMapViewController", sender: nil)
+        if !businesses.isEmpty {
+            performSegue(withIdentifier: "BusinessMapViewController", sender: nil)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -261,7 +276,7 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
                 loadingMoreView!.startAnimating()
                 
                 // Code to load more results
-                searchWith(term: searchBar.text ?? "Restaurants", newSearch: false)
+                searchWith(term: searchBar.text!.isEmpty ? "Restaurants" : searchBar.text!, newSearch: false)
             }
         }
     }
