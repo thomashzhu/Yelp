@@ -44,14 +44,14 @@ class YelpClient: BDBOAuth1RequestOperationManager {
     }
     
     func searchWithTerm(_ term: String, completion: @escaping ([Business]?, Error?) -> Void) -> AFHTTPRequestOperation {
-        return searchWithTerm(term, sort: nil, categories: nil, deals: nil, completion: completion)
+        return searchWithTerm(term, location: nil, sort: nil, categories: nil, deals: nil, completion: completion)
     }
     
-    func searchWithTerm(_ term: String, sort: YelpSortMode?, categories: [String]?, deals: Bool?, completion: @escaping ([Business]?, Error?) -> Void) -> AFHTTPRequestOperation {
+    func searchWithTerm(_ term: String, location: String?, sort: YelpSortMode?, categories: [String]?, deals: Bool?, completion: @escaping ([Business]?, Error?) -> Void) -> AFHTTPRequestOperation {
         // For additional parameters, see http://www.yelp.com/developers/documentation/v2/search_api
         
         // Default the location to San Francisco
-        var parameters: [String : AnyObject] = ["term": term as AnyObject, "ll": "37.785771,-122.406165" as AnyObject]
+        var parameters: [String : AnyObject] = ["term": term as AnyObject, "ll": (location ?? "37.7867703362929,-122.399958372115") as AnyObject]
         
         if sort != nil {
             parameters["sort"] = sort!.rawValue as AnyObject?

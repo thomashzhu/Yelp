@@ -89,6 +89,10 @@ class BusinessDetailViewController: UIViewController, MKMapViewDelegate {
         
         if ratingInformationAvailable {
             loadReviews()
+        } else {
+            self.customerNameLabel.text = ""
+            self.customerRatingLabel.text = ""
+            self.customerReviewTextView.text = "No review yet"
         }
     }
     
@@ -115,6 +119,7 @@ class BusinessDetailViewController: UIViewController, MKMapViewDelegate {
                             self.customerRatingLabel.text = "--"
                         }
                         self.customerReviewTextView.text = review?["excerpt"] as? String
+                        print(review?["excerpt"] as? String ?? "")
                     }
                 }
             }

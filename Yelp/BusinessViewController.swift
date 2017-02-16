@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import CoreLocation
 
-class BusinessViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UIScrollViewDelegate {
+class BusinessViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UIScrollViewDelegate, CLLocationManagerDelegate {
     
     private(set) var businesses = [Business]()
     private(set) var allBusinesses = [Business]()
@@ -20,10 +21,13 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
     private(set) var searchBar: UISearchBar!
     private(set) var mapButton: UIButton!
     
+    private(set) var manager = CLLocationManager()
+    private(set) var userLocation: CLLocation!
+    
     @IBOutlet weak var tableView: UITableView!
     
     private(set) var isMoreDataLoading = false
-    private(set) var loadingMoreView:InfiniteScrollActivityView?
+    private(set) var loadingMoreView: InfiniteScrollActivityView?
     
     override func viewDidLoad() {
         
@@ -54,7 +58,35 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
             }
         }
         
-        searchWith(term: "Restaurants", newSearch: true)
+        manager.delegate = self
+        manager.distanceFilter = 100.0
+        manager.desiredAccuracy = kCLLocationAccuracyBest
+        
+        if CLLocationManager.locationServicesEnabled() {
+            switch CLLocationManager.authorizationStatus() {
+            case .authorizedAlways, .authorizedWhenInUse:
+                manager.startUpdatingLocation()
+            case .notDetermined:
+                manager.requestWhenInUseAuthorization()
+            case .restricted, .denied:
+                let alertController = UIAlertController(
+                    title: "Background Location Access Disabled",
+                    message: "In order to be notified about adorable kittens near you, please open this app's settings and set location access to 'Always'.",
+                    preferredStyle: .alert)
+                
+                let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                alertController.addAction(cancelAction)
+                
+                let openAction = UIAlertAction(title: "Open Settings", style: .default) { (action) in
+                    if let url = URL(string: UIApplicationOpenSettingsURLString) {
+                        UIApplication.shared.openURL(url)
+                    }
+                }
+                alertController.addAction(openAction)
+                
+                self.present(alertController, animated: true, completion: nil)
+            }
+        }
         
         // Set up Infinite Scroll loading indicator
         let frame = CGRect(x: 0, y: tableView.contentSize.height, width: tableView.bounds.size.width, height: InfiniteScrollActivityView.defaultHeight)
@@ -96,6 +128,19 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
         navigationBar?.viewWithTag(1)?.isHidden = true
     }
     
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedAlways || status == .authorizedWhenInUse {
+            manager.startUpdatingLocation()
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let location = locations.last {
+            userLocation = location
+            searchWith(term: "Restaurants", newSearch: true)
+        }
+    }
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let text = searchBar.text {
             if !text.isEmpty {
@@ -126,7 +171,16 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
     }
     
     private func searchWith(term: String, newSearch: Bool) {
-        Business.searchWithTerm(term: term, sort: .distance, categories: nil, deals: true) { (businesses, error) in
+        
+        let locationString: String? = {
+            if let userLocation = userLocation {
+                return "\(userLocation.coordinate.latitude),\(userLocation.coordinate.longitude)"
+            } else {
+                return nil
+            }
+        }()
+        
+        Business.searchWithTerm(term: term, location: locationString, sort: .distance, categories: nil, deals: true) { (businesses, error) in
             if let businesses = businesses {
                 self.isMoreDataLoading = false
                 // Stop the loading indicator

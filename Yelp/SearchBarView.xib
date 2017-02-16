@@ -25,7 +25,7 @@
                                     <constraints>
                                         <constraint firstAttribute="width" constant="65" id="8ry-1R-Ef9"/>
                                     </constraints>
-                                    <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="13"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="12"/>
                                     <state key="normal" title="Filter">
                                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
@@ -40,7 +40,7 @@
                                     <constraints>
                                         <constraint firstAttribute="width" constant="65" id="dic-DC-S7h"/>
                                     </constraints>
-                                    <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="13"/>
+                                    <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="12"/>
                                     <state key="normal" title="Map">
                                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
