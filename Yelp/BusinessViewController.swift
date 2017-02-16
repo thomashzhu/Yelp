@@ -1,5 +1,5 @@
 //
-//  BusinessesViewController.swift
+//  BusinessViewController.swift
 //  Yelp
 //
 //  Created by Timothy Lee on 4/23/15.
@@ -8,9 +8,13 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UIScrollViewDelegate {
+class BusinessViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UIScrollViewDelegate {
     
     private(set) var businesses = [Business]()
+    private(set) var allBusinesses = [Business]()
+    
+    private(set) var categories = [String]()
+    private(set) var selectedCategories = [String]()
     
     private(set) var filterButton: UIButton!
     private(set) var searchBar: UISearchBar!
@@ -35,14 +39,14 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
             if let searchBarView = Bundle.main.loadNibNamed("SearchBarView", owner: nil, options: nil)?.first as? SearchBarView {
                 
                 filterButton = searchBarView.filterButton
-                filterButton.addTarget(self, action: #selector(BusinessesViewController.filterButtonTapped), for: .touchUpInside)
+                filterButton.addTarget(self, action: #selector(BusinessViewController.filterButtonTapped), for: .touchUpInside)
                 
                 searchBar = searchBarView.searchBar
                 searchBar.delegate = self
                 
                 mapButton = searchBarView.mapButton
                 mapButton.addTarget(self,
-                                    action: #selector(BusinessesViewController.mapButtonTapped), for: .touchUpInside)
+                                    action: #selector(BusinessViewController.mapButtonTapped), for: .touchUpInside)
                 
                 searchBarView.frame = navigationBar.bounds
                 searchBarView.tag = 1
@@ -64,8 +68,27 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        
         let navigationBar = navigationController?.navigationBar
         navigationBar?.viewWithTag(1)?.isHidden = false
+        
+        if !selectedCategories.isEmpty {
+            businesses = allBusinesses.filter { business in
+                if let categories = business.categories {
+                    let categoryArray = categories.components(separatedBy: ", ")
+                    for category in categoryArray {
+                        if selectedCategories.contains(category) {
+                            return true
+                        }
+                    }
+                }
+                return false
+            }
+        } else {
+            businesses = allBusinesses
+        }
+        
+        tableView.reloadData()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -99,11 +122,7 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     }
     
     func filterButtonTapped() {
-        let message = "Yelp API only give us very limited number of results, are you sure you want to further filter down the result?" + "\n\n" + "Just kidding, this function is just still under construction. Please come back later."
-        let ac = UIAlertController(title: "Filter", message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        ac.addAction(okAction)
-        present(ac, animated: true, completion: nil)
+        performSegue(withIdentifier: "BusinessFilterViewController", sender: nil)
     }
     
     private func searchWith(term: String, newSearch: Bool) {
@@ -114,31 +133,60 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
                 self.loadingMoreView!.stopAnimating()
                 
                 if newSearch {
-                    self.businesses = businesses
+                    self.allBusinesses = businesses
                 } else {
-                    self.businesses.append(contentsOf: businesses)
+                    self.allBusinesses.append(contentsOf: businesses)
                 }
+                self.businesses = self.allBusinesses
+                
+                self.categories = businesses.reduce([]) { (allCategories, business) -> [String] in
+                    if let categories = business.categories {
+                        if !categories.isEmpty {
+                            let categoryArray = categories.components(separatedBy: ", ")
+                            return categoryArray.reduce(allCategories) { (businessCategories, category) -> [String] in
+                                return allCategories.contains(category) ? businessCategories : businessCategories + [category]
+                            }
+                        }
+                    }
+                    return allCategories
+                }
+                self.categories.sort()
+                
                 self.tableView.reloadData()
             }
         }
     }
     
     func mapButtonTapped() {
-        performSegue(withIdentifier: "BusinessesMapViewController", sender: nil)
+        performSegue(withIdentifier: "BusinessMapViewController", sender: nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "BusinessDetailViewController" {
-            if let vc = segue.destination as? BusinessDetailViewController {
-                if let selectedCell = sender as? UITableViewCell {
-                    if let indexPath = tableView.indexPath(for: selectedCell) {
-                        vc.business = businesses[indexPath.row]
+        if let identifier = segue.identifier {
+            switch identifier {
+            case "BusinessFilterViewController":
+                if let vc = segue.destination as? BusinessFilterViewController {
+                    vc.categories = categories
+                    vc.selectedCategories = selectedCategories
+                    
+                    vc.callback = { selectedCategories in
+                        self.selectedCategories = selectedCategories
                     }
                 }
-            }
-        } else if segue.identifier == "BusinessesMapViewController" {
-            if let vc = segue.destination as? BusinessesMapViewController {
-                vc.businesses = businesses
+            case "BusinessDetailViewController":
+                if let vc = segue.destination as? BusinessDetailViewController {
+                    if let selectedCell = sender as? UITableViewCell {
+                        if let indexPath = tableView.indexPath(for: selectedCell) {
+                            vc.business = businesses[indexPath.row]
+                        }
+                    }
+                }
+            case "BusinessMapViewController":
+                if let vc = segue.destination as? BusinessMapViewController {
+                    vc.businesses = businesses
+                }
+            default:
+                break;
             }
         }
     }

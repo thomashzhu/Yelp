@@ -1,5 +1,5 @@
 //
-//  BusinessesMapViewController.swift
+//  BusinessMapViewController.swift
 //  Yelp
 //
 //  Created by Thomas Zhu on 2/14/17.
@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class BusinessesMapViewController: UIViewController, MKMapViewDelegate {
+class BusinessMapViewController: UIViewController, MKMapViewDelegate {
 
     @IBOutlet weak var mapView: MKMapView!
     

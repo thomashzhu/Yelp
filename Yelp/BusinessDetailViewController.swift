@@ -51,7 +51,12 @@ class BusinessDetailViewController: UIViewController, MKMapViewDelegate {
         businessNameLabel.text = business.name
         if let rating = business.rating,
             let reviewCount = business.reviewCount as? Int {
-            ratingLabel.text = "\(rating) with \(reviewCount) reviews"
+            
+            let ratingNumber = (whole: Int(modf(rating).0), half: Int(modf(rating).1 / 0.5))
+            let wholeStars = String(repeating: "\u{2730}", count: ratingNumber.whole)
+            let halfStar = String(repeating: "\u{00BD}", count: ratingNumber.half)
+            
+            ratingLabel.text = "\(wholeStars + halfStar)  (\(reviewCount) reviews)"
             ratingInformationAvailable = (reviewCount > 0)
         } else {
             ratingLabel.text = "Review information not available"

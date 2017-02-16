@@ -10,10 +10,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Businesses View Controller-->
+        <!--Business View Controller-->
         <scene sceneID="5L9-Uz-lNK">
             <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" id="2xI-yr-O5N" customClass="BusinessesViewController" customModule="Yelp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController automaticallyAdjustsScrollViewInsets="NO" id="2xI-yr-O5N" customClass="BusinessViewController" customModule="Yelp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="hR0-74-jRp"/>
                         <viewControllerLayoutGuide type="bottom" id="VBY-gq-v8E"/>
@@ -129,12 +129,56 @@
                     <navigationItem key="navigationItem" id="4f6-fT-hzE"/>
                     <connections>
                         <outlet property="tableView" destination="Zwy-Tx-IvD" id="yJb-cw-4n6"/>
-                        <segue destination="SFc-3n-JPL" kind="show" identifier="BusinessesMapViewController" id="6Zf-bX-K1g"/>
+                        <segue destination="SFc-3n-JPL" kind="show" identifier="BusinessMapViewController" id="6Zf-bX-K1g"/>
+                        <segue destination="GQJ-CF-P2e" kind="show" identifier="BusinessFilterViewController" id="ilW-YR-Yd9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Fgb-4b-F1b" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1622" y="334"/>
+        </scene>
+        <!--Business Filter View Controller-->
+        <scene sceneID="VzR-rf-Cuk">
+            <objects>
+                <viewController id="GQJ-CF-P2e" customClass="BusinessFilterViewController" customModule="Yelp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="kX1-Gq-H5x"/>
+                        <viewControllerLayoutGuide type="bottom" id="Rq1-Wu-VAC"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="sMQ-Kt-oDv">
+                        <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsMultipleSelection="YES" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="em9-d4-EGj">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="603"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="CategoryCell" id="Xko-jL-Ilq">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xko-jL-Ilq" id="CgI-Os-2Df">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="em9-d4-EGj" secondAttribute="trailing" id="BkG-8p-UPp"/>
+                            <constraint firstItem="Rq1-Wu-VAC" firstAttribute="top" secondItem="em9-d4-EGj" secondAttribute="bottom" id="JFR-Aw-96v"/>
+                            <constraint firstItem="em9-d4-EGj" firstAttribute="leading" secondItem="sMQ-Kt-oDv" secondAttribute="leading" id="Ppt-0o-IuP"/>
+                            <constraint firstItem="em9-d4-EGj" firstAttribute="top" secondItem="kX1-Gq-H5x" secondAttribute="bottom" id="urV-GQ-Fb1"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="tableView" destination="em9-d4-EGj" id="Mnc-FE-Bs0"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Gjh-Y0-0e0" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3158" y="-474"/>
         </scene>
         <!--Business Detail View Controller-->
         <scene sceneID="I8s-if-vsa">
@@ -160,16 +204,16 @@
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="P7G-rI-3gb">
                                                 <rect key="frame" x="8" y="8" width="359" height="54.5"/>
                                                 <subviews>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="245" translatesAutoresizingMaskIntoConstraints="NO" id="Inf-zK-NIC">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="245" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Inf-zK-NIC">
                                                         <rect key="frame" x="0.0" y="0.0" width="359" height="23.5"/>
                                                         <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="245" verticalHuggingPriority="251" text="__BUSINESS NAME__" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nEr-qe-1HZ">
-                                                                <rect key="frame" x="0.0" y="0.0" width="297" height="23.5"/>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="245" verticalHuggingPriority="251" text="__BUSINESS NAME__" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="nEr-qe-1HZ">
+                                                                <rect key="frame" x="0.0" y="0.0" width="289" height="23.5"/>
                                                                 <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="17"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                 <nil key="highlightedColor"/>
                                                             </label>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="__RATING__" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pLX-UN-d8T">
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="755" text="__RATING__" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pLX-UN-d8T">
                                                                 <rect key="frame" x="297" y="0.0" width="62" height="23.5"/>
                                                                 <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="11"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -183,11 +227,11 @@
                                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="STw-ls-ZPO">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="STw-ls-ZPO">
                                                         <rect key="frame" x="0.0" y="39" width="359" height="15.5"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="245" verticalHuggingPriority="251" text="__CATEGORIES__" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="egt-jR-njp">
-                                                                <rect key="frame" x="0.0" y="0.0" width="283.5" height="15.5"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="275.5" height="15.5"/>
                                                                 <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="11"/>
                                                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                                 <nil key="highlightedColor"/>
@@ -312,12 +356,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qa1-o4-WFA" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2577" y="697"/>
+            <point key="canvasLocation" x="2409" y="1192"/>
         </scene>
-        <!--Businesses Map View Controller-->
+        <!--Business Map View Controller-->
         <scene sceneID="6VZ-jN-jhZ">
             <objects>
-                <viewController storyboardIdentifier="BusinessesMapViewController" id="SFc-3n-JPL" customClass="BusinessesMapViewController" customModule="Yelp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="BusinessesMapViewController" id="SFc-3n-JPL" customClass="BusinessMapViewController" customModule="Yelp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="zcz-ee-Ltg"/>
                         <viewControllerLayoutGuide type="bottom" id="SOm-qe-HoA"/>
@@ -349,7 +393,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jfI-kk-LoK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2578" y="-11"/>
+            <point key="canvasLocation" x="3159" y="334"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="e01-Mo-ugL">
@@ -373,6 +417,6 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="g4w-ta-GZ0"/>
+        <segue reference="hgM-v4-eJR"/>
     </inferredMetricsTieBreakers>
 </document>
