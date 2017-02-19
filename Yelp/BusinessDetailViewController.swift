@@ -11,9 +11,7 @@ import MapKit
 
 class BusinessDetailViewController: UIViewController, MKMapViewDelegate {
 
-    var business: Business!
-    
-    private(set) var ratingInformationAvailable = false
+    // MARK: - IBOutlets
     
     @IBOutlet weak var businessImageView: UIImageView!
     
@@ -32,41 +30,50 @@ class BusinessDetailViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet weak var businessSectionView: UIView!
     
+    // MARK: - Property declarations
+    
+    var business: Business!
+    
+    // MARK: - Lifecycle methods
+    
     override func viewDidLoad() {
-        
         super.viewDidLoad()
+        prepareUI()
+    }
+    
+    // MARK: - Helper methods
+    
+    private func prepareUI () {
         
+        // Business background image (blurry due to Yelp API limitation)
         if let imageURL = business.imageURL {
             businessImageView.setImageWith(imageURL)
             
             /*
-                AFNetworking appears not to work with Aspect Fill directly
-                (image will go out of bound), but Content Fill and Aspect
-                Fill do work normally.
+             AFNetworking appears not to work with Aspect Fill directly
+             (image will go out of bound), but Content Fill and Aspect
+             Fill do work normally. So clipsToBounds is used here
              */
             businessImageView.contentMode = .scaleAspectFill
             businessSectionView.clipsToBounds = true
         }
         
+        // Business name
         businessNameLabel.text = business.name
-        if let rating = business.rating,
-            let reviewCount = business.reviewCount as? Int {
-            
-            let ratingNumber = (whole: Int(modf(rating).0), half: Int(modf(rating).1 / 0.5))
-            let wholeStars = String(repeating: "\u{2730}", count: ratingNumber.whole)
-            let halfStar = String(repeating: "\u{00BD}", count: ratingNumber.half)
-            
-            ratingLabel.text = "\(wholeStars + halfStar)  (\(reviewCount) reviews)"
-            ratingInformationAvailable = (reviewCount > 0)
-        } else {
-            ratingLabel.text = "Review information not available"
-        }
         
+        // Business rating (score AND number of reviews)
+        ratingLabel.text = business.ratingText
+        
+        // Business phone number
         phoneNumberLabel.text = "Phone: \(business.displayPhone ?? "(to be added)")"
         
+        // Distance (in miles)
         distanceLabel.text = business.distance
+        
+        // Business categories
         categoriesLabel.text = business.categories
         
+        // Business showing on the map
         mapView.delegate = self
         mapView.showsUserLocation = true
         mapView.layer.cornerRadius = 8.0
@@ -81,48 +88,40 @@ class BusinessDetailViewController: UIViewController, MKMapViewDelegate {
             
             mapView.showAnnotations([annotation], animated: false)
             addressLabel.text = business.address
-            
         } else {
             addressLabel.text = "Address not available"
-            
         }
         
-        if ratingInformationAvailable {
-            loadReviews()
+        // Business review (if any) - Yelp API only returns one
+        loadReview()
+    }
+    
+    private func loadReview() {
+        
+        typealias ReviewJSONKey = N.JSONKey.Business.CustomerReview
+        
+        if let reviewCount = business.reviewCount as? Int, reviewCount > 0 {
+            if let id = business.id {
+                Business.searchWithBusinessId(id: id) { (business, error) in
+                    if let business = business,
+                        let reviews = business[ReviewJSONKey.reviews] as? [[String: AnyObject]],
+                        let review = reviews.first {
+                        
+                        self.customerNameLabel.text =
+                            review[ReviewJSONKey.userInfo]?[ReviewJSONKey.userName] as? String
+                        if let rating = review[ReviewJSONKey.rating] as? Double {
+                            self.customerRatingLabel.text = "\(rating)"
+                        } else {
+                            self.customerRatingLabel.text = N.loadingText
+                        }
+                        self.customerReviewTextView.text = review[ReviewJSONKey.reviewText] as? String
+                    }
+                }
+            }
         } else {
             self.customerNameLabel.text = ""
             self.customerRatingLabel.text = ""
             self.customerReviewTextView.text = "No review yet"
-        }
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        view.layoutIfNeeded()
-        businessImageView.layoutIfNeeded()
-    }
-    
-    private func loadReviews() {
-        
-        if ratingInformationAvailable {
-            
-            if let id = business.id {
-                Business.searchWithBusinessId(id: id) { (business, error) in
-                    if let business = business, let reviews = business["reviews"] as? [[String: AnyObject]] {
-                        
-                        // Yelp API only shows one review
-                        let review = reviews.first
-                        
-                        self.customerNameLabel.text = review?["user"]?["name"] as? String
-                        if let rating = review?["rating"] as? Double {
-                            self.customerRatingLabel.text = "\(rating)"
-                        } else {
-                            self.customerRatingLabel.text = "--"
-                        }
-                        self.customerReviewTextView.text = review?["excerpt"] as? String
-                        print(review?["excerpt"] as? String ?? "")
-                    }
-                }
-            }
         }
     }
 }

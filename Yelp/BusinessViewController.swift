@@ -13,6 +13,12 @@ import EZLoadingActivity
 
 class BusinessViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, UIScrollViewDelegate, CLLocationManagerDelegate {
     
+    // MARK: - IBOutlets
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    // MARK: - Properties declarations
+    
     private(set) var businesses = [Business]()
     private(set) var allBusinesses = [Business]()
     
@@ -26,10 +32,10 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
     private(set) var manager = CLLocationManager()
     private(set) var userLocation: CLLocation!
     
-    @IBOutlet weak var tableView: UITableView!
-    
     private(set) var isMoreDataLoading = false
     private(set) var loadingMoreView: InfiniteScrollActivityView?
+    
+    // MARK: - Lifecycle methods
     
     override func viewDidLoad() {
         
@@ -42,7 +48,7 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
             
             navigationBar.tintColor = UIColor.white
             
-            if let searchBarView = Bundle.main.loadNibNamed("SearchBarView", owner: nil, options: nil)?.first as? SearchBarView {
+            if let searchBarView = Bundle.main.loadNibNamed(C.Identifier.Storyboard.searchBarView, owner: nil, options: nil)?.first as? SearchBarView {
                 
                 filterButton = searchBarView.filterButton
                 filterButton.addTarget(self, action: #selector(BusinessViewController.filterButtonTapped), for: .touchUpInside)
@@ -130,6 +136,8 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
         navigationBar?.viewWithTag(1)?.isHidden = true
     }
     
+    // MARK: - CLLocationManagerDelegate methods
+    
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         if status == .authorizedAlways || status == .authorizedWhenInUse {
             manager.startUpdatingLocation()
@@ -146,6 +154,8 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
+    // MARK: - UISearchBarDelegate methods
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let text = searchBar.text {
             if !text.isEmpty {
@@ -154,9 +164,11 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
+    // MARK: - UITableViewDataSource methods
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if let cell = tableView.dequeueReusableCell(withIdentifier: "BusinessCell", for: indexPath) as? BusinessCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: C.Identifier.TableCell.businessCell, for: indexPath) as? BusinessCell {
             
             let business = businesses[indexPath.row]
             cell.business = business
@@ -171,9 +183,44 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
         return businesses.count
     }
     
-    func filterButtonTapped() {
-        performSegue(withIdentifier: "BusinessFilterViewController", sender: nil)
+    // MARK: - UIScrollViewDelegate methods
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if (!isMoreDataLoading) {
+            // Calculate the position of one screen length before the bottom of the results
+            let scrollViewContentHeight = tableView.contentSize.height
+            let scrollOffsetThreshold = scrollViewContentHeight - tableView.bounds.size.height
+            
+            // When the user has scrolled past the threshold, start requesting
+            if(scrollView.contentOffset.y > scrollOffsetThreshold && tableView.isDragging) {
+                isMoreDataLoading = true
+                
+                // Update position of loadingMoreView, and start loading indicator
+                let frame = CGRect(x: 0, y: tableView.contentSize.height, width: tableView.bounds.size.width, height: InfiniteScrollActivityView.defaultHeight)
+                loadingMoreView?.frame = frame
+                loadingMoreView!.startAnimating()
+                
+                // Code to load more results
+                searchWith(term: searchBar.text!.isEmpty ? "Restaurants" : searchBar.text!, newSearch: false)
+            }
+        }
     }
+    
+    // MARK: - Navigation bar actions
+    
+    func filterButtonTapped() {
+        if !businesses.isEmpty {
+            performSegue(withIdentifier: C.Identifier.Segue.businessFilterVC, sender: nil)
+        }
+    }
+    
+    func mapButtonTapped() {
+        if !businesses.isEmpty {
+            performSegue(withIdentifier: C.Identifier.Segue.businessMapVC, sender: nil)
+        }
+    }
+    
+    // MARK: - Helper methods
     
     private func searchWith(term: String, newSearch: Bool) {
         
@@ -224,16 +271,20 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
         }
     }
     
-    func mapButtonTapped() {
-        if !businesses.isEmpty {
-            performSegue(withIdentifier: "BusinessMapViewController", sender: nil)
-        }
-    }
+    // MARK: - Segue
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let identifier = segue.identifier {
             switch identifier {
-            case "BusinessFilterViewController":
+            case C.Identifier.Segue.businessDetailVC:
+                if let vc = segue.destination as? BusinessDetailViewController {
+                    if let selectedCell = sender as? UITableViewCell {
+                        if let indexPath = tableView.indexPath(for: selectedCell) {
+                            vc.business = businesses[indexPath.row]
+                        }
+                    }
+                }
+            case C.Identifier.Segue.businessFilterVC:
                 if let vc = segue.destination as? BusinessFilterViewController {
                     vc.categories = categories
                     vc.selectedCategories = selectedCategories
@@ -242,41 +293,12 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
                         self.selectedCategories = selectedCategories
                     }
                 }
-            case "BusinessDetailViewController":
-                if let vc = segue.destination as? BusinessDetailViewController {
-                    if let selectedCell = sender as? UITableViewCell {
-                        if let indexPath = tableView.indexPath(for: selectedCell) {
-                            vc.business = businesses[indexPath.row]
-                        }
-                    }
-                }
-            case "BusinessMapViewController":
+            case C.Identifier.Segue.businessMapVC:
                 if let vc = segue.destination as? BusinessMapViewController {
                     vc.businesses = businesses
                 }
             default:
                 break;
-            }
-        }
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if (!isMoreDataLoading) {
-            // Calculate the position of one screen length before the bottom of the results
-            let scrollViewContentHeight = tableView.contentSize.height
-            let scrollOffsetThreshold = scrollViewContentHeight - tableView.bounds.size.height
-            
-            // When the user has scrolled past the threshold, start requesting
-            if(scrollView.contentOffset.y > scrollOffsetThreshold && tableView.isDragging) {
-                isMoreDataLoading = true
-                
-                // Update position of loadingMoreView, and start loading indicator
-                let frame = CGRect(x: 0, y: tableView.contentSize.height, width: tableView.bounds.size.width, height: InfiniteScrollActivityView.defaultHeight)
-                loadingMoreView?.frame = frame
-                loadingMoreView!.startAnimating()
-                
-                // Code to load more results
-                searchWith(term: searchBar.text!.isEmpty ? "Restaurants" : searchBar.text!, newSearch: false)
             }
         }
     }

@@ -27,6 +27,7 @@ class Business: NSObject {
     let url: String?
     let rating: Double?
     let reviews: [[String: AnyObject]]?
+    let ratingText: String
     
     init(dictionary: NSDictionary) {
         name = dictionary["name"] as? String
@@ -104,6 +105,15 @@ class Business: NSObject {
         url = dictionary["url"] as? String
         rating = dictionary["rating"] as? Double
         reviews = dictionary["reviews"] as? [[String: AnyObject]]
+        
+        if let rating = rating, let reviewCount = reviewCount as? Int {
+            let ratingNumber = (whole: Int(modf(rating).0), half: Int(modf(rating).1 / 0.5))
+            let wholeStars = String(repeating: "\u{2730}", count: ratingNumber.whole)
+            let halfStar = String(repeating: "\u{00BD}", count: ratingNumber.half)
+            ratingText = "\(wholeStars + halfStar)  (\(reviewCount) reviews)"
+        } else {
+            ratingText = "Review information not available"
+        }
     }
     
     class func businesses(array: [NSDictionary]) -> [Business] {

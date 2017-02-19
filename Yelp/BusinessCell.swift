@@ -40,4 +40,3 @@ class BusinessCell: UITableViewCell {
         thumbImageView.clipsToBounds = true
     }
 }
-// Assignment Quickstart Video: Yelp Basic Setup

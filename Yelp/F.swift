@@ -9,6 +9,9 @@
 import UIKit
 
 struct F {
+    
+    private init() {}
+    
     struct Theme {
         struct Color {
             static let red = UIColor(red: 198/255, green: 57/255, blue: 38/255, alpha: 1.0)
