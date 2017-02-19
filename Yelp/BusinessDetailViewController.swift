@@ -39,6 +39,13 @@ class BusinessDetailViewController: UIViewController, MKMapViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         prepareUI()
+        
+        if let _ = business.url {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Web Page",
+                                                                style: .plain,
+                                                                target: self,
+                                                                action: #selector(BusinessDetailViewController.loadWebPageButtonTapped))
+        }
     }
     
     // MARK: - Helper methods
@@ -122,6 +129,22 @@ class BusinessDetailViewController: UIViewController, MKMapViewDelegate {
             self.customerNameLabel.text = ""
             self.customerRatingLabel.text = ""
             self.customerReviewTextView.text = "No review yet"
+        }
+    }
+    
+    func loadWebPageButtonTapped() {
+        performSegue(withIdentifier: C.Identifier.Segue.businessWebPageVC, sender: nil)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let identifier = segue.identifier {
+            if identifier == C.Identifier.Segue.businessWebPageVC {
+                if let vc = segue.destination as? BusinessWebPageViewController {
+                    if let url = business.url {
+                        vc.url = url
+                    }
+                }
+            }
         }
     }
 }

@@ -9,7 +9,7 @@
 import UIKit
 import MapKit
 
-class BusinessMapViewController: UIViewController {
+class BusinessMapViewController: UIViewController, MKMapViewDelegate {
 
     // MARK: - IBOutlets
     
@@ -25,9 +25,13 @@ class BusinessMapViewController: UIViewController {
         
         super.viewDidLoad()
         
-        mapView.delegate = BusinessMapViewDelegate(context: self)
+        mapView.delegate = self
         mapView.showsUserLocation = true
-        
+    }
+    
+    // MARK: - MKMapViewDelegate methods
+    
+    func mapViewDidFinishRenderingMap(_ mapView: MKMapView, fullyRendered: Bool) {
         let annotations = businesses.reduce([]) { (result, business) -> [IdentifiableAnnotation] in
             if let latitude = business.latitude, let longitude = business.longitude {
                 let annotation = IdentifiableAnnotation(identifier: business.id,
@@ -38,7 +42,44 @@ class BusinessMapViewController: UIViewController {
             }
             return result
         }
+        
         mapView.showAnnotations(annotations, animated: true)
+    }
+    
+    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        let annotationReuseIdentifier = "BusinessLocation"
+        
+        if let annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: annotationReuseIdentifier) {
+            annotationView.annotation = annotation
+            return annotationView
+        } else {
+            let annotationView = MKPinAnnotationView(annotation:annotation, reuseIdentifier:annotationReuseIdentifier)
+            annotationView.isEnabled = true
+            annotationView.canShowCallout = true
+            
+            let detailButton = UIButton(type: .detailDisclosure)
+            annotationView.rightCalloutAccessoryView = detailButton
+            return annotationView
+        }
+    }
+    
+    func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        if control == view.rightCalloutAccessoryView {
+            if let selectedAnnotation = view.annotation as? IdentifiableAnnotation {
+                if let selectedBusinessId = selectedAnnotation.identifier {
+                    let selectedBusinesses = businesses.filter { (business) -> Bool in
+                        if business.id == selectedBusinessId {
+                            return true
+                        }
+                        return false
+                    }
+                    
+                    if let business = selectedBusinesses.first {
+                        performSegue(withIdentifier: C.Identifier.Segue.businessDetailVC, sender: business)
+                    }
+                }
+            }
+        }
     }
     
     // MARK: - Helper methods

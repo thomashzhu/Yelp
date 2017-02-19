@@ -16,6 +16,7 @@ struct C {
             static let businessDetailVC = "BusinessDetailViewController"
             static let businessFilterVC = "BusinessFilterViewController"
             static let businessMapVC = "BusinessMapViewController"
+            static let businessWebPageVC = "BusinessWebPageViewController"
         }
         
         struct Storyboard {
