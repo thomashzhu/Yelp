@@ -112,23 +112,7 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
         let navigationBar = navigationController?.navigationBar
         navigationBar?.viewWithTag(1)?.isHidden = false
         
-        if !selectedCategories.isEmpty {
-            businesses = allBusinesses.filter { business in
-                if let categories = business.categories {
-                    let categoryArray = categories.components(separatedBy: ", ")
-                    for category in categoryArray {
-                        if selectedCategories.contains(category) {
-                            return true
-                        }
-                    }
-                }
-                return false
-            }
-        } else {
-            businesses = allBusinesses
-        }
-        
-        tableView.reloadData()
+        filterResult()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -264,11 +248,30 @@ class BusinessViewController: UIViewController, UITableViewDataSource, UITableVi
                 }
                 self.categories.sort()
                 
-                self.tableView.reloadData()
+                self.filterResult()
                 
                 EZLoadingActivity.hide()
             }
         }
+    }
+    
+    func filterResult() {
+        if !selectedCategories.isEmpty {
+            businesses = allBusinesses.filter { business in
+                if let categories = business.categories {
+                    let categoryArray = categories.components(separatedBy: ", ")
+                    for category in categoryArray {
+                        if selectedCategories.contains(category) {
+                            return true
+                        }
+                    }
+                }
+                return false
+            }
+        } else {
+            businesses = allBusinesses
+        }
+        tableView.reloadData()
     }
     
     // MARK: - Segue
